@@ -58,6 +58,7 @@
 
 static int extract_key_value(char* str, char** key, char** value);
 static int as_int(char* str, int* i);
+static int as_uint16(char* str, uint16_t* i);
 static int as_bool(char* str, bool* b);
 static int as_logging_type(char* str);
 static int as_logging_level(char* str);
@@ -2172,6 +2173,41 @@ as_int(char* str, int* i)
    }
 
    *i = (int)val;
+
+   return 0;
+
+error:
+
+   errno = 0;
+
+   return 1;
+}
+
+static int
+as_uint16(char* str, uint16_t* i)
+{
+   char* endptr;
+   unsigned long val;
+
+   errno = 0;
+   val = strtoul(str, &endptr, 10);
+
+   if ((errno == ERANGE && (val == USHRT_MAX || val == USHRT_MIN)) || (errno != 0 && val == 0))
+   {
+      goto error;
+   }
+
+   if (str == endptr)
+   {
+      goto error;
+   }
+
+   if (*endptr != '\0')
+   {
+      goto error;
+   }
+
+   *i = (uint16_t)val;
 
    return 0;
 
@@ -4349,7 +4385,7 @@ pgagroal_apply_main_configuration(struct main_configuration* config,
    }
    else if (key_in_section("port", section, key, true, NULL))
    {
-      if (as_int(value, &config->common.port))
+      if (as_uint16(value, &config->common.port))
       {
          unknown = true;
       }
@@ -4357,7 +4393,7 @@ pgagroal_apply_main_configuration(struct main_configuration* config,
    else if (key_in_section("port", section, key, false, &unknown))
    {
       memcpy(&srv->name, section, strlen(section));
-      if (as_int(value, &srv->port))
+      if (as_uint16(value, &srv->port))
       {
          unknown = true;
       }
@@ -4381,7 +4417,7 @@ pgagroal_apply_main_configuration(struct main_configuration* config,
    }
    else if (key_in_section("metrics", section, key, true, &unknown))
    {
-      if (as_int(value, &config->common.metrics))
+      if (as_uint16(value, &config->common.metrics))
       {
          unknown = true;
       }
@@ -4402,7 +4438,7 @@ pgagroal_apply_main_configuration(struct main_configuration* config,
    }
    else if (key_in_section("management", section, key, true, &unknown))
    {
-      if (as_int(value, &config->management))
+      if (as_uint16(value, &config->management))
       {
          unknown = true;
       }
@@ -4786,7 +4822,7 @@ pgagroal_apply_vault_configuration(struct vault_configuration* config,
    }
    else if (key_in_section("port", section, key, true, NULL))
    {
-      if (as_int(value, &config->common.port))
+      if (as_uint16(value, &config->common.port))
       {
          unknown = true;
       }
@@ -4794,7 +4830,7 @@ pgagroal_apply_vault_configuration(struct vault_configuration* config,
    else if (key_in_section("port", section, key, false, &unknown))
    {
       memcpy(&srv->server.name, section, strlen(section));
-      if (as_int(value, &srv->server.port))
+      if (as_uint16(value, &srv->server.port))
       {
          unknown = true;
       }
@@ -4844,7 +4880,7 @@ pgagroal_apply_vault_configuration(struct vault_configuration* config,
    }
    else if (key_in_section("metrics", section, key, true, &unknown))
    {
-      if (as_int(value, &config->common.metrics))
+      if (as_uint16(value, &config->common.metrics))
       {
          unknown = true;
       }

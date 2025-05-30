@@ -157,6 +157,14 @@ int
 pgagroal_extract_error_message(struct message* msg, char** error);
 
 /**
+ * Parse uint16 from string
+ * @param str Pointer to the string
+ * @return The uint16
+ */
+uint16_t
+pgagroal_parse_uint16(char* str);
+
+/**
  * Read a byte
  * @param data Pointer to the data
  * @return The byte

@@ -284,7 +284,7 @@ struct server
 {
    char name[MISC_LENGTH];          /**< The name of the server */
    char host[MISC_LENGTH];          /**< The host name of the server */
-   int port;                        /**< The port of the server */
+   uint16_t port;                   /**< The port of the server */
    bool tls;                        /**< Use TLS if possible */
    char tls_cert_file[MISC_LENGTH]; /**< TLS certificate path */
    char tls_key_file[MISC_LENGTH];  /**< TLS key path */
@@ -472,7 +472,7 @@ struct configuration
 {
    char configuration_path[MAX_PATH]; /**< The configuration path */
    char host[MISC_LENGTH];            /**< The host */
-   int port;                          /**< The port */
+   uint16_t port;                     /**< The port */
    int authentication_timeout;        /**< The authentication timeout in seconds */
 
    // Logging
@@ -495,7 +495,7 @@ struct configuration
    char tls_ca_file[MISC_LENGTH];   /**< TLS CA certificate path */
    // Prometheus
    unsigned char hugepage;              /**< Huge page support */
-   int metrics;                         /**< The metrics port */
+   uint16_t metrics;                    /**< The metrics port */
    unsigned int metrics_cache_max_age;  /**< Number of seconds to cache the Prometheus response */
    unsigned int metrics_cache_max_size; /**< Number of bytes max to cache the Prometheus response */
 };
@@ -524,7 +524,7 @@ struct main_configuration
    char admins_path[MAX_PATH];        /**< The admins path */
    char superuser_path[MAX_PATH];     /**< The superuser path */
 
-   int management;         /**< The management port */
+   uint16_t management;    /**< The management port */
    bool gracefully;        /**< Is pgagroal in gracefully mode */
 
    bool all_disabled;                                      /**< Are all databases disabled */

@@ -372,7 +372,7 @@ main(int argc, char** argv)
    int exit_code = 0;
    char* configuration_path = NULL;
    char* host = NULL;
-   char* port = NULL;
+   unsigned short port = 0;
    char* username = NULL;
    char* password = NULL;
    bool verbose = false;
@@ -426,7 +426,12 @@ main(int argc, char** argv)
             host = optarg;
             break;
          case 'p':
-            port = optarg;
+            port = pgagroal_parse_uint16(optarg);
+            if (!port)
+            {
+               warnx("pgagroal-cli: Specified port %s is incorrect", optarg);
+               exit(1);
+            }
             break;
          case 'U':
             username = optarg;
@@ -537,9 +542,9 @@ main(int argc, char** argv)
    // if the user has specified the host and port
    // options, she wants a remote connection
    // but both remote connection parameters have to be set
-   if (host != NULL || port != NULL)
+   if (host != NULL || port != 0)
    {
-      remote_connection = host != NULL && port != NULL;
+      remote_connection = host != NULL && port != 0;
       if (!remote_connection)
       {
          printf("pgagroal-cli: you need both -h and -p options to perform a remote connection\n");
@@ -664,25 +669,17 @@ main(int argc, char** argv)
    else
    {
       /* Remote connection */
-      if (pgagroal_connect(host, atoi(port), &socket, config->keep_alive, config->non_blocking, config->nodelay))
+      if (pgagroal_connect(host, port, &socket, config->keep_alive, config->non_blocking, config->nodelay))
       {
-         /* Remote connection */
-         l_port = strtol(port, NULL, 10);
-         if ((errno == ERANGE && (l_port == LONG_MAX || l_port == LONG_MIN)) || (errno != 0 && l_port == 0))
-         {
-            warnx("Specified port %s out of range", port);
-            goto done;
-         }
-
          // cannot connect to port less than 1024 because pgagroal
          // cannot be run as root!
-         if (l_port <= 1024)
+         if (port <= 1024)
          {
-            warnx("Not allowed port %ld", l_port);
+            warnx("Not allowed port %ld", port);
             goto done;
          }
 
-         if (pgagroal_connect(host, (int)l_port, &socket, config->keep_alive, config->non_blocking, config->nodelay))
+         if (pgagroal_connect(host, port, &socket, config->keep_alive, config->non_blocking, config->nodelay))
          {
             warnx("No route to host: %s:%ld\n", host, l_port);
             goto done;

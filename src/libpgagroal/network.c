@@ -53,14 +53,14 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-static int bind_host(const char* hostname, int port, int** fds, int* length, bool non_blocking, int* buffer_size, bool no_delay, int backlog);
+static int bind_host(const char* hostname, uint16_t port, int** fds, int* length, bool non_blocking, int* buffer_size, bool no_delay, int backlog);
 static int socket_buffers(int fd);
 
 /**
  *
  */
 int
-pgagroal_bind(const char* hostname, int port, int** fds, int* length, bool non_blocking, bool no_delay, int backlog)
+pgagroal_bind(const char* hostname, uint16_t port, int** fds, int* length, bool non_blocking, bool no_delay, int backlog)
 {
    int default_buffer_size = DEFAULT_BUFFER_SIZE;
    struct ifaddrs* ifaddr, * ifa;
@@ -238,7 +238,7 @@ pgagroal_remove_unix_socket(const char* directory, const char* file)
  *
  */
 int
-pgagroal_connect(const char* hostname, int port, int* fd, bool keep_alive, bool non_blocking, bool no_delay)
+pgagroal_connect(const char* hostname, uint16_t port, int* fd, bool keep_alive, bool non_blocking, bool no_delay)
 {
    int default_buffer_size = DEFAULT_BUFFER_SIZE;
    struct addrinfo hints = {0};
@@ -249,12 +249,6 @@ pgagroal_connect(const char* hostname, int port, int* fd, bool keep_alive, bool 
    int rv;
    char sport[6];
    int error = 0;
-
-   if (port < 0 || port > 65535)
-   {
-      pgagroal_log_error("pgagroal_connect: Invalid connect port number %d", port);
-      return 1;
-   }
 
    memset(&sport, 0, sizeof(sport));
    sprintf(&sport[0], "%d", port);
@@ -597,7 +591,7 @@ socket_buffers(int fd)
  *
  */
 static int
-bind_host(const char* hostname, int port, int** fds, int* length, bool non_blocking, int* buffer_size, bool no_delay, int backlog)
+bind_host(const char* hostname, uint16_t port, int** fds, int* length, bool non_blocking, int* buffer_size, bool no_delay, int backlog)
 {
    int* result = NULL;
    int index, size;
@@ -609,12 +603,6 @@ bind_host(const char* hostname, int port, int** fds, int* length, bool non_block
 
    index = 0;
    size = 0;
-
-   if (port < 0 || port > 65535)
-   {
-      pgagroal_log_error("bind_host: Invalid listen port number %d", port);
-      return 1;
-   }
 
    memset(&sport, 0, sizeof(sport));
    sprintf(&sport[0], "%d", port);
@@ -637,7 +625,7 @@ bind_host(const char* hostname, int port, int** fds, int* length, bool non_block
    }
 
    result = calloc(1, size * sizeof(int));
-   if (sport == NULL)
+   if (result == NULL)
    {
       pgagroal_log_fatal("Couldn't allocate memory while binding host");
       return 1;

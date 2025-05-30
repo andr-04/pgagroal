@@ -48,7 +48,7 @@ extern "C" {
  * @return 0 upon success, otherwise 1
  */
 int
-pgagroal_bind(const char* hostname, int port, int** fds, int* length, bool no_blocking, bool no_delay, int backlog);
+pgagroal_bind(const char* hostname, uint16_t port, int** fds, int* length, bool no_blocking, bool no_delay, int backlog);
 
 /**
  * Bind a Unix Domain Socket
