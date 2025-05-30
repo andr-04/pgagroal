@@ -384,7 +384,6 @@ main(int argc, char** argv)
    char un[MAX_USERNAME_LENGTH];
    struct main_configuration* config = NULL;
    bool remote_connection = false;
-   long l_port;
    int32_t output_format = MANAGEMENT_OUTPUT_FORMAT_TEXT;
    int32_t compression = MANAGEMENT_COMPRESSION_NONE;
    int32_t encryption = MANAGEMENT_ENCRYPTION_NONE;
@@ -426,12 +425,13 @@ main(int argc, char** argv)
             host = optarg;
             break;
          case 'p':
-            port = pgagroal_parse_uint16(optarg);
-            if (!port)
+            unsigned long l_port = strtoul(optarg, NULL, 10);
+            if (l_port == 0 || l_port > USHRT_MAX)
             {
                warnx("pgagroal-cli: Specified port %s is incorrect", optarg);
                exit(1);
             }
+            port = (uint16_t)l_port;
             break;
          case 'U':
             username = optarg;
@@ -681,7 +681,7 @@ main(int argc, char** argv)
 
          if (pgagroal_connect(host, port, &socket, config->keep_alive, config->non_blocking, config->nodelay))
          {
-            warnx("No route to host: %s:%ld\n", host, l_port);
+            warnx("No route to host: %s:%ld\n", host, port);
             goto done;
          }
 

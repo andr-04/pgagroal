@@ -284,25 +284,6 @@ pgagroal_connection_state_as_string(signed char state)
    }
 }
 
-uint16_t
-pgagroal_parse_uint16(char* str)
-{
-   char *end;
-   errno = 0;
-   unsigned long val = strtoul(s, &end, 10);
-
-   if (errno == ERANGE) {
-      return 0;
-   }
-   if (end == s || *end != '\0') {
-      return 0;
-   }
-   if (val > USHRT_MAX) {
-      return 0;
-   }
-   return (unsigned short)val;
-}
-
 signed char
 pgagroal_read_byte(void* data)
 {
