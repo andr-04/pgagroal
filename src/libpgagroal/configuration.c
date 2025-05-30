@@ -2192,7 +2192,7 @@ as_uint16(char* str, uint16_t* i)
    errno = 0;
    val = strtoul(str, &endptr, 10);
 
-   if ((errno == ERANGE && (val == USHRT_MAX || val == USHRT_MIN)) || (errno != 0 && val == 0))
+   if ((errno == ERANGE && (val == USHRT_MAX || val == 0)) || (errno != 0 && val == 0))
    {
       goto error;
    }
