@@ -80,7 +80,7 @@ pgagroal_remove_unix_socket(const char* directory, const char* file);
  * @return 0 upon success, otherwise 1
  */
 int
-pgagroal_connect(const char* hostname, int port, int* fd, bool keep_alive, bool non_blocking, bool no_delay);
+pgagroal_connect(const char* hostname, uint16_t port, int* fd, bool keep_alive, bool non_blocking, bool no_delay);
 
 /**
  * Connect to a Unix Domain Socket
