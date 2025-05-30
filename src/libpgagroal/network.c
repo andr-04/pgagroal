@@ -247,8 +247,14 @@ pgagroal_connect(const char* hostname, int port, int* fd, bool keep_alive, bool 
    int yes = 1;
    socklen_t optlen = sizeof(int);
    int rv;
-   char sport[5];
+   char sport[6];
    int error = 0;
+
+   if (port < 0 || port > 65535)
+   {
+      pgagroal_log_error("pgagroal_connect: Invalid connect port number %d", port);
+      return 1;
+   }
 
    memset(&sport, 0, sizeof(sport));
    sprintf(&sport[0], "%d", port);
@@ -599,18 +605,19 @@ bind_host(const char* hostname, int port, int** fds, int* length, bool non_block
    struct addrinfo hints, * servinfo, * addr;
    int yes = 1;
    int rv;
-   char* sport;
+   char sport[6];
 
    index = 0;
    size = 0;
 
-   sport = calloc(1, 5);
-   if (sport == NULL)
+   if (port < 0 || port > 65535)
    {
-      pgagroal_log_fatal("Couldn't allocate memory while binding host");
+      pgagroal_log_error("bind_host: Invalid listen port number %d", port);
       return 1;
    }
-   sprintf(sport, "%d", port);
+
+   memset(&sport, 0, sizeof(sport));
+   sprintf(&sport[0], "%d", port);
 
    /* Find all SOCK_STREAM addresses */
    memset(&hints, 0, sizeof hints);
@@ -618,14 +625,11 @@ bind_host(const char* hostname, int port, int** fds, int* length, bool non_block
    hints.ai_socktype = SOCK_STREAM;
    hints.ai_flags = AI_PASSIVE;
 
-   if ((rv = getaddrinfo(hostname, sport, &hints, &servinfo)) != 0)
+   if ((rv = getaddrinfo(hostname, &sport[0], &hints, &servinfo)) != 0)
    {
-      free(sport);
       pgagroal_log_error("getaddrinfo: %s:%d (%s)", hostname, port, gai_strerror(rv));
       return 1;
    }
-
-   free(sport);
 
    for (addr = servinfo; addr != NULL; addr = addr->ai_next)
    {
