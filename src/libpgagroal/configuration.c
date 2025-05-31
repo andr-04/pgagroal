@@ -135,6 +135,7 @@ pgagroal_init_configuration(void* shm)
    config->authquery = false;
    config->blocking_timeout = 30;
    config->idle_timeout = 0;
+   config->write_timeout = 0;
    config->rotate_frontend_password_timeout = 0;
    config->rotate_frontend_password_length = MIN_PASSWORD_LENGTH;
    config->max_connection_age = 0;
@@ -2697,6 +2698,7 @@ transfer_configuration(struct main_configuration* config, struct main_configurat
 
    config->blocking_timeout = reload->blocking_timeout;
    config->idle_timeout = reload->idle_timeout;
+   config->write_timeout = reload->write_timeout;
    config->rotate_frontend_password_timeout = reload->rotate_frontend_password_timeout;
    config->rotate_frontend_password_length = reload->rotate_frontend_password_length;
    config->max_connection_age = reload->max_connection_age;
@@ -3695,6 +3697,10 @@ pgagroal_write_config_value(char* buffer, char* config_key, size_t buffer_size)
       {
          return to_int(buffer, config->idle_timeout);
       }
+      else if (!strncmp(key, "write_timeout", MISC_LENGTH))
+      {
+         return to_int(buffer, config->write_timeout);
+      }
       else if (!strncmp(key, "rotate_frontend_password_timeout", MISC_LENGTH))
       {
          return to_int(buffer, config->rotate_frontend_password_timeout);
@@ -4550,6 +4556,13 @@ pgagroal_apply_main_configuration(struct main_configuration* config,
    else if (key_in_section("idle_timeout", section, key, true, &unknown))
    {
       if (as_int(value, &config->idle_timeout))
+      {
+         unknown = true;
+      }
+   }
+   else if (key_in_section("write_timeout", section, key, true, &unknown))
+   {
+      if (as_seconds(value, &config->write_timeout, 0))
       {
          unknown = true;
       }

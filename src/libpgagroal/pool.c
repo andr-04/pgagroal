@@ -183,7 +183,7 @@ start:
          }
          else
          {
-            ret = pgagroal_connect(config->servers[server].host, config->servers[server].port, &fd, config->keep_alive, config->non_blocking, config->nodelay);
+            ret = pgagroal_connect(config->servers[server].host, config->servers[server].port, &fd, config->keep_alive, config->non_blocking, config->nodelay, config->write_timeout);
          }
 
          if (ret)
@@ -611,6 +611,8 @@ pgagroal_kill_connection(int slot, SSL* ssl)
    atomic_store(&config->states[slot], STATE_NOTINIT);
 
    pgagroal_prometheus_connection_kill();
+
+   pgagroal_server_failover(slot);
 
    return result;
 }

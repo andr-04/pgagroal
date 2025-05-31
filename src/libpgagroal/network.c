@@ -238,7 +238,7 @@ pgagroal_remove_unix_socket(const char* directory, const char* file)
  *
  */
 int
-pgagroal_connect(const char* hostname, uint16_t port, int* fd, bool keep_alive, bool non_blocking, bool no_delay)
+pgagroal_connect(const char* hostname, uint16_t port, int* fd, bool keep_alive, bool non_blocking, bool no_delay, unsigned int write_timeout)
 {
    int default_buffer_size = DEFAULT_BUFFER_SIZE;
    struct addrinfo hints = {0};
@@ -296,6 +296,21 @@ pgagroal_connect(const char* hostname, uint16_t port, int* fd, bool keep_alive, 
          if (no_delay)
          {
             if (setsockopt(*fd, IPPROTO_TCP, TCP_NODELAY, &yes, optlen) == -1)
+            {
+               error = errno;
+               pgagroal_disconnect(*fd);
+               errno = 0;
+               *fd = -1;
+               continue;
+            }
+         }
+
+         if (write_timeout)
+         {
+            struct timeval tv;
+            tv.tv_sec = write_timeout;
+            tv.tv_usec = 0;
+            if (setsockopt(*fd, SOL_SOCKET, SO_SNDTIMEO, (const char*)&tv, sizeof(tv)) == -1)
             {
                error = errno;
                pgagroal_disconnect(*fd);

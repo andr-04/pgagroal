@@ -264,7 +264,7 @@ connect_pgagroal(struct vault_configuration* config, char* username, char* passw
 {
    SSL* s = NULL;
 
-   if (pgagroal_connect(config->vault_server.server.host, config->vault_server.server.port, client_socket, false, false, false))
+   if (pgagroal_connect(config->vault_server.server.host, config->vault_server.server.port, client_socket, false, false, false, 0))
    {
       pgagroal_disconnect(*client_socket);
       return 1;

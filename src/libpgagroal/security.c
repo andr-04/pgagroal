@@ -188,7 +188,7 @@ pgagroal_authenticate(int client_fd, char* address, int* slot, SSL** client_ssl,
       }
       else
       {
-         ret = pgagroal_connect(config->servers[server].host, config->servers[server].port, &server_fd, config->keep_alive, config->non_blocking, config->nodelay);
+         ret = pgagroal_connect(config->servers[server].host, config->servers[server].port, &server_fd, config->keep_alive, config->non_blocking, config->nodelay, config->write_timeout);
       }
 
       if (ret)
@@ -4537,7 +4537,7 @@ retry:
       }
       else
       {
-         ret = pgagroal_connect(config->servers[server].host, config->servers[server].port, server_fd, config->keep_alive, config->non_blocking, config->nodelay);
+         ret = pgagroal_connect(config->servers[server].host, config->servers[server].port, server_fd, config->keep_alive, config->non_blocking, config->nodelay, config->write_timeout);
       }
 
       if (ret)

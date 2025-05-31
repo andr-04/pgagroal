@@ -548,6 +548,7 @@ struct main_configuration
    int rotate_frontend_password_timeout;  /**< The rotation frontend password timeout in seconds */
    int rotate_frontend_password_length;   /**< Length of randomised passwords */
    int max_connection_age;       /**< The max connection age in seconds */
+   unsigned int write_timeout;   /**< The timeout of writing in seconds */
    int validation;               /**< Validation mode */
    int background_interval;      /**< Background validation timer in seconds */
    int max_retries;              /**< The maximum number of retries */

@@ -669,7 +669,7 @@ main(int argc, char** argv)
    else
    {
       /* Remote connection */
-      if (pgagroal_connect(host, port, &socket, config->keep_alive, config->non_blocking, config->nodelay))
+      if (pgagroal_connect(host, port, &socket, config->keep_alive, config->non_blocking, config->nodelay, config->write_timeout))
       {
          // cannot connect to port less than 1024 because pgagroal
          // cannot be run as root!
@@ -679,7 +679,7 @@ main(int argc, char** argv)
             goto done;
          }
 
-         if (pgagroal_connect(host, port, &socket, config->keep_alive, config->non_blocking, config->nodelay))
+         if (pgagroal_connect(host, port, &socket, config->keep_alive, config->non_blocking, config->nodelay, config->write_timeout))
          {
             warnx("No route to host: %s:%ld\n", host, port);
             goto done;

@@ -77,10 +77,11 @@ pgagroal_remove_unix_socket(const char* directory, const char* file);
  * @param keep_alive Use keep alive
  * @param non_blocking Use non blocking
  * @param no_delay Use NODELAY
+ * @param write_timeout The timeout of writing data
  * @return 0 upon success, otherwise 1
  */
 int
-pgagroal_connect(const char* hostname, uint16_t port, int* fd, bool keep_alive, bool non_blocking, bool no_delay);
+pgagroal_connect(const char* hostname, uint16_t port, int* fd, bool keep_alive, bool non_blocking, bool no_delay, unsigned int write_timeout);
 
 /**
  * Connect to a Unix Domain Socket
